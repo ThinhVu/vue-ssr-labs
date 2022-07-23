@@ -1,4 +1,4 @@
 // client.js
-import { createApp } from './app.js'
+import { createApp } from './main.js'
 
 createApp().mount('#app')

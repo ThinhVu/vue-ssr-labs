@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { renderToString } from 'vue/server-renderer';
-import { createApp } from './app.js';
+import { createApp } from './main.js';
 import {ssrContextStore} from './appStore.js';
 
 const server = express()
@@ -11,6 +11,9 @@ server.use(cookieParser())
 server.use(express.static('.'))
 
 const app = createApp();
+app._props = {
+  ssrProps: 'Inject ssr props here'
+}
 function getFullHtml(appHtml) {
   return `
     <!DOCTYPE html>
@@ -33,6 +36,7 @@ function getFullHtml(appHtml) {
     `
 }
 
+// auth using cookie
 server.get('/', (req, res, next) => {
   res.cookie('uid', '123456', { httpOnly: true, path: '/'})
   next();
