@@ -9,6 +9,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.17.2",
-    "vue": "^3.2.26"
+    "vue": "^3.2.26",
+    "vue-router": "4"
   }
 }

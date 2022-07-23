@@ -10,10 +10,6 @@ server.use(cors())
 server.use(cookieParser())
 server.use(express.static('.'))
 
-const app = createApp();
-app._props = {
-  ssrProps: 'Inject ssr props here'
-}
 function getFullHtml(appHtml) {
   return `
     <!DOCTYPE html>
@@ -23,7 +19,9 @@ function getFullHtml(appHtml) {
         <script type="importmap">
           {
             "imports": {
-              "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+              "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+              "vue-router": "https://unpkg.com/vue-router@4.1.2/dist/vue-router.esm-browser.js",
+              "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.2.1/"
             }
           }
         </script>
@@ -41,9 +39,24 @@ server.get('/', (req, res, next) => {
   res.cookie('uid', '123456', { httpOnly: true, path: '/'})
   next();
 });
-server.get('/', (req, res) => {
-  renderToString(app, {...ssrContextStore, uid: req.cookies && req.cookies.uid}).then(appHtml => res.send(getFullHtml(appHtml)))
+
+server.get('/', async (req, res) => {
+  const {app, router} = createApp()
+  await router.push({path: '/'})
+  await router.isReady()
+  const ctx = {...ssrContextStore, uid: req.cookies && req.cookies.uid}
+  const appHtml = await renderToString(app, ctx)
+  const fullHtml = getFullHtml(appHtml)
+  res.send(fullHtml);
 });
+
+server.get('/about', async (req, res) => {
+  const {app, router} = createApp()
+  app._props = { ssrProps: 'Inject ssr props here' }
+  await router.push({path: '/about'})
+  await router.isReady()
+  renderToString(app, {...ssrContextStore, uid: req.cookies && req.cookies.uid}).then(appHtml => res.send(getFullHtml(appHtml)))
+})
 
 const PORT = 3000;
 server.listen(PORT, () => console.log('app listen on port' + PORT))
