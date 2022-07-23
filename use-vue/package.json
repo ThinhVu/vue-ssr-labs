@@ -1,0 +1,14 @@
+{
+  "name": "use-vue",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "serve": "cd ./src && node server.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.17.2",
+    "vue": "^3.2.26"
+  }
+}
