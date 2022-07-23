@@ -1,8 +1,8 @@
-import {h} from 'vue'
+import {h, resolveComponent} from 'vue'
 
 const App = {
   setup() {
-    return () => h('div', h('router-view'))
+    return () => h('div', h(resolveComponent('router-view')))
   }
 }
 

@@ -59,4 +59,4 @@ server.get('/about', async (req, res) => {
 })
 
 const PORT = 3000;
-server.listen(PORT, () => console.log('app listen on port' + PORT))
+server.listen(PORT, () => console.log('app listen on http://localhost:' + PORT))
