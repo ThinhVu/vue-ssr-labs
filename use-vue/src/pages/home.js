@@ -3,11 +3,19 @@
 // https://vuejs.org/guide/scaling-up/ssr.html
 // https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution
 import {h, onBeforeUnmount, onMounted, ref, useSSRContext} from 'vue';
-import {reactivityStore} from '../appStore.js';
+import {reactivityStore} from '../store/reactivityStore.js';
+import useBeerStore from '../store/pinia/beer.js'
 
 const Home = {
-  props: ['ssrProps'],
+  props: ['serverRenderTime'],
+  async serverPrefetch() {
+    // server side only
+    const beerStore = useBeerStore()
+    await beerStore.fetchData()
+  },
   setup(props, ctx) {
+    ctx.emit('setup:starting', 'Lorem ispum')
+
     // region Setup
     // 0. Access SSRContext
     // SSR content is server only code
@@ -20,6 +28,14 @@ const Home = {
 
     const componentCounter = ref(0);
     const increment = () => componentCounter.value++; // only call in browser
+
+    const beerStore = useBeerStore();
+    onMounted(() => {
+      // client side only
+      console.log('beers', beerStore.beers)
+      if (beerStore.beers.length === 0)
+        beerStore.fetchData();
+    })
 
     // 1. Component Lifecycle Hooks
     const ssrLifeCycleHooksCounter = ref(0);
@@ -57,17 +73,19 @@ const Home = {
     return () => h('div', [
       // Data & Cross-Request State Pollution
       h('h3', 'Data & Cross-Request State Pollution (Reload multiple time & compare the view with html source)'),
-      h('p', { style: 'margin-right: 10px' }, `Component counter: ${componentCounter.value}`),
+      h('p', { style: 'margin-right: 10px' }, `Component counter (this one only run in user browser): ${componentCounter.value}`),
       h('button', {onClick: increment}, `Increase component counter`),
-      h('p', { style: 'margin-right: 10px' }, `Global ReactivityAPI obj counter (browser increment): ${reactivityStore.browserCount}`),
+      h('p', { style: 'margin-right: 10px' }, `Global ReactivityAPI obj counter (this one only run in user browser): ${reactivityStore.browserCount}`),
       h('button', {onClick: reactivityStore.browserIncrement}, `Increment Global ReactivityAPI obj counter (browser)`),
-      h('p', `Global ReactivityAPI obj counter (ssr increment): ${reactivityStore.ssrCount}`),
-      h('p', `ssrContext counter: ${ssrContextCounter}`),
-      h('p', `ssrLifeCycleHooksCounter: ${ssrLifeCycleHooksCounter.value}`),
-      h('p', `browserLifeCycleHooksCounter: ${browserLifeCycleHooksCounter.value}`),
+      h('p', `Global ReactivityAPI obj counter (this one run in server, lead to hydration mismatch): ${reactivityStore.ssrCount}`),
+      h('p', `ssrContext counter (this one run in server, lead to hydration mismatch): ${ssrContextCounter}`),
+      h('p', `ssrLifeCycleHooksCounter (this one run in server too: no hydration mismatch but memory leak, performance leak): ${ssrLifeCycleHooksCounter.value}`),
+      h('p', `browserLifeCycleHooksCounter (this one only run in user browser): ${browserLifeCycleHooksCounter.value}`),
       h('br'),
+      h('h3', 'Using Pinia store'),
+      h('ul', beerStore.beers.map(beer => h('li', { key: beer.id }, `${beer.name} - ${beer.tagline}`))),
       //  Access to Platform-Specific APIs
-      props.ssrProps && h('p', `Ssr props: ${props.ssrProps}`),
+      props.serverRenderTime && h('p', `Ssr props: ${props.serverRenderTime}`),
       uid && h('p', `User Id: ${uid}`),
       h('p', `Platform-Specific APIs: ${env.value}`),
       h('br'),

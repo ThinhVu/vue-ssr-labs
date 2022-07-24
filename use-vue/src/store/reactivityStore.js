@@ -11,6 +11,3 @@ export const reactivityStore = reactive({
     reactivityStore.ssrCount++
   }
 });
-
-
-export const ssrContextStore = { counter: 0 }

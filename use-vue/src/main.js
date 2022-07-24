@@ -1,19 +1,17 @@
-// main.js shared between client (for hydration) & server (for ssr)
-import {createSSRApp} from 'vue';
-import {createRouter, createWebHistory, createMemoryHistory} from 'vue-router';
+// similar like main.js in normal CSR application. The only difference is createSSR
+// will be used instead of createApp.
+
+// main.js is shared between client (for hydration) & server (for ssr)
+import {createSSRApp, markRaw} from 'vue';
 import App from './app.js'
-import Home from './pages/home.js';
-import About from './pages/about.js';
+import router from './router.js'
+import {pinia} from './store/pinia/index.js'
 
 export const createApp = () => {
   const app = createSSRApp(App)
-  const router = createRouter({
-    history: typeof window === 'undefined' ? createMemoryHistory() : createWebHistory(),
-    routes: [
-      { path: '/', component: Home },
-      { path: '/about', component: About },
-    ]
-  })
   app.use(router)
-  return {app, router}
-};
+  app.use(pinia)
+  // inject vue router into pinia. now you can use vue-router in pinia actions
+  pinia.use(({store}) => store.$router = markRaw(router))
+  return {app, router, store: pinia}
+}
