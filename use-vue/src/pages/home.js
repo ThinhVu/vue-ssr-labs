@@ -3,19 +3,19 @@
 // https://vuejs.org/guide/scaling-up/ssr.html
 // https://vuejs.org/guide/scaling-up/ssr.html#cross-request-state-pollution
 import {h, onBeforeUnmount, onMounted, ref, useSSRContext} from 'vue';
+import helloWorld from '../components/hello-world.js';
 import {reactivityStore} from '../store/reactivityStore.js';
 import useBeerStore from '../store/pinia/beer.js'
 
 const Home = {
+  components: {helloWorld},
   props: ['serverRenderTime'],
   async serverPrefetch() {
     // server side only
     const beerStore = useBeerStore()
     await beerStore.fetchData()
   },
-  setup(props, ctx) {
-    ctx.emit('setup:starting', 'Lorem ispum')
-
+  setup(props, __) {
     // region Setup
     // 0. Access SSRContext
     // SSR content is server only code
@@ -71,6 +71,8 @@ const Home = {
 
     // region Render
     return () => h('div', [
+      h(helloWorld),
+
       // Data & Cross-Request State Pollution
       h('h3', 'Data & Cross-Request State Pollution (Reload multiple time & compare the view with html source)'),
       h('p', { style: 'margin-right: 10px' }, `Component counter (this one only run in user browser): ${componentCounter.value}`),
