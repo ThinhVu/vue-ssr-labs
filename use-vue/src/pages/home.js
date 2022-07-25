@@ -5,16 +5,10 @@
 import {h, onBeforeUnmount, onMounted, ref, useSSRContext} from 'vue';
 import helloWorld from '../components/hello-world.js';
 import {reactivityStore} from '../store/reactivityStore.js';
-import useBeerStore from '../store/pinia/beer.js'
 
-const Home = {
+export default {
   components: {helloWorld},
   props: ['serverRenderTime'],
-  async serverPrefetch() {
-    // server side only
-    const beerStore = useBeerStore()
-    await beerStore.fetchData()
-  },
   setup(props, __) {
     // region Setup
     // 0. Access SSRContext
@@ -28,14 +22,6 @@ const Home = {
 
     const componentCounter = ref(0);
     const increment = () => componentCounter.value++; // only call in browser
-
-    const beerStore = useBeerStore();
-    onMounted(() => {
-      // client side only
-      console.log('beers', beerStore.beers)
-      if (beerStore.beers.length === 0)
-        beerStore.fetchData();
-    })
 
     // 1. Component Lifecycle Hooks
     const ssrLifeCycleHooksCounter = ref(0);
@@ -84,8 +70,6 @@ const Home = {
       h('p', `ssrLifeCycleHooksCounter (this one run in server too: no hydration mismatch but memory leak, performance leak): ${ssrLifeCycleHooksCounter.value}`),
       h('p', `browserLifeCycleHooksCounter (this one only run in user browser): ${browserLifeCycleHooksCounter.value}`),
       h('br'),
-      h('h3', 'Using Pinia store'),
-      h('ul', beerStore.beers.map(beer => h('li', { key: beer.id }, `${beer.name} - ${beer.tagline}`))),
       //  Access to Platform-Specific APIs
       props.serverRenderTime && h('p', `Ssr props: ${props.serverRenderTime}`),
       uid && h('p', `User Id: ${uid}`),
@@ -99,5 +83,3 @@ const Home = {
     // endregion
   }
 }
-
-export default Home;

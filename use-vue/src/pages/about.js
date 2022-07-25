@@ -1,9 +1,7 @@
 import {h} from 'vue'
 
-const About = {
+export default {
   setup() {
     return () => h('div', 'About')
   }
 }
-
-export default About
