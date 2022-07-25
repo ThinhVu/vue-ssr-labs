@@ -32,7 +32,10 @@ export default {
 
     return () => h('div', [
       h('h3', 'Beer info'),
-      renderBeerInfo()
+      renderBeerInfo(),
+      h('h4', 'Notes:'),
+      h('p', '- See server log about warning: [Vue Router warn]: Path "/beer/1" was passed with params but they will be ignored.'),
+      h('p', "- Uncomment server.get('/beer/:id', namedRoute('beer_id'), ssr) in server.js to resolve"),
     ])
   }
 }

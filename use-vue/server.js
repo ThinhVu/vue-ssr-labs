@@ -84,13 +84,7 @@ server.get('/api/auth', (req, res) => {
   res.cookie('uid', 'u123456', { httpOnly: true, path: '/'})
   res.end('Authorized');
 })
-server.get('/', namedRoute('home'), ssr)
-server.get('/beer', namedRoute('beer'))
-server.get('/beer/:id', namedRoute('beer_id'), ssr)
-server.get('/hydration-mismatch', namedRoute('hydration-mismatch'), ssr)
-server.get('/interval-leak', namedRoute('interval-leak'), ssr)
-server.get('/cross-request-state-pollution', namedRoute('cross-request-state-pollution'), ssr)
-server.get('/access-platform-api', namedRoute('access-platform-api'), ssr)
+// server.get('/beer/:id', namedRoute('beer_id'), ssr)
 server.get('*', ssr);
 
 const PORT = 3000;
