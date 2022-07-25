@@ -31,13 +31,7 @@ const importMaps = {
   }
 }
 
-// auth using cookie
-server.get('/api/auth', (req, res) => {
-  res.cookie('uid', 'u123456', { httpOnly: true, path: '/'})
-  res.end('Authorized');
-})
-
-server.get('*', async (req, res) => {
+async function ssr(req, res) {
   const {app, router, store} = createApp()
   // provide app property by app._props to app object
   app._props = { serverRenderTime: Date.now() }
@@ -46,7 +40,7 @@ server.get('*', async (req, res) => {
   // app._context = {}
 
   // prepare for ssr appropriate route
-  await router.push({path: req.path})
+  await router.push(req)
   await router.isReady()
 
   // renderToString must be called before getting pinia state data
@@ -76,7 +70,14 @@ server.get('*', async (req, res) => {
   ]
   const headHtml = tags.join('');
   res.send(getFullHtml(headHtml, appHtml));
-});
+}
+
+// auth using cookie
+server.get('/api/auth', (req, res) => {
+  res.cookie('uid', 'u123456', { httpOnly: true, path: '/'})
+  res.end('Authorized');
+})
+server.get('*', ssr);
 
 const PORT = 3000;
 server.listen(PORT, () => console.log(`app listen on http://localhost:${PORT}`))
