@@ -71,12 +71,19 @@ async function ssr(req, res) {
   const headHtml = tags.join('');
   res.send(getFullHtml(headHtml, appHtml));
 }
+function namedRoute(name) {
+  return (req, res, next) => {
+    req.name = name
+    next()
+  }
+}
 
 // auth using cookie
 server.get('/api/auth', (req, res) => {
   res.cookie('uid', 'u123456', { httpOnly: true, path: '/'})
   res.end('Authorized');
 })
+server.get('/beer/:id', namedRoute('beer_id'), ssr);
 server.get('*', ssr);
 
 const PORT = 3000;
