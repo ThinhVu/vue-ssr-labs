@@ -1,0 +1,15 @@
+{
+  "name": "use-vue",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "serve": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.2",
+    "node-fetch": "^3.2.9",
+    "pinia": "^2.0.16",
+    "vue": "^3.2.26",
+    "vue-router": "4"
+  }
+}

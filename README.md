@@ -2,6 +2,11 @@
 
 This repo aim to provide an insight from low level to high level solutions of Vue SSR with a lot of pitfall
 
+### use-vue-basic
+A POC of Vue SSR using VueJs + Vue-router + Pinia.
+
+I tried to make the project as small as possible so you can understand the idea easily. The project doesn't have any pitfalls. 
+
 ### use-vue
 
 Just using VueJs to implement SSR (project includes vue-router, state management: reactive API, SSR context, Pinia store) which demonstrate a lot of pitfalls:
