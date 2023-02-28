@@ -5,7 +5,7 @@ This repo aim to provide an insight from low level to high level solutions of Vu
 ### use-vue-basic
 A POC of Vue SSR using VueJs + Vue-router + Pinia.
 
-I tried to make the project as small as possible so you can understand the idea easily. The project doesn't have any pitfalls. 
+I tried to make the project as small as possible, so you can understand the idea easily. The project doesn't have any pitfalls. 
 
 ### use-vue
 
