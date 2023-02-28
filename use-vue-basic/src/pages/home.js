@@ -1,14 +1,12 @@
-import {h, ref, onMounted} from 'vue';
+import {h, ref, onServerPrefetch, onMounted} from 'vue';
 import useBeerStore from '../store/beer.js';
 
 const Home = {
-  async serverPrefetch() {
-    // server side only
-    const beerStore = useBeerStore()
-    await beerStore.fetchData()
-  },
   setup() {
     const beerStore = useBeerStore();
+    onServerPrefetch(async () => {
+      await beerStore.fetchData()
+    })
     onMounted(() => {
       // client side only
       console.log('beers', beerStore.beers)
@@ -23,7 +21,10 @@ const Home = {
     return () => h('div', [
       'Home',
       h('button', { onClick: increment }, `Clicked: ${count.value}`),
-      h('ul', beerStore.beers.map(beer => h('li', { key: beer.id }, `${beer.name} - ${beer.tagline}`)))
+      h('ul', beerStore.beers.map(beer => h('li',
+          { key: beer.id },
+          `${beer.name} - ${beer.tagline}`
+      )))
     ])
   }
 }
