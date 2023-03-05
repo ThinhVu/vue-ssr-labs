@@ -9,6 +9,8 @@ import { createPinia } from 'pinia'
 
 export const createApp = () => {
   const app = createSSRApp(App)
+  // everytime a request is call, new pinia store will be created -> prevent Cross Request State Pollution
+  // avoid using SSR context & reactivity store
   const pinia = createPinia()
   app.use(router)
   app.use(pinia)
