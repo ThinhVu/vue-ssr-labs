@@ -2,8 +2,8 @@
 import { createApp } from './src/main.js'
 
 const { app, router, store } = createApp()
-if (window.__pinia) {
-  console.log('__pinia', window.__pinia)
-  store.state.value = window.__pinia
+if (window.__INITIAL_STATE__) {
+  console.log('__pinia', window.__INITIAL_STATE__)
+  store.state.value = window.__INITIAL_STATE__
 }
 router.isReady().then(() => app.mount('#app'))

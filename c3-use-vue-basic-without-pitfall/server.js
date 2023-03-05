@@ -46,7 +46,7 @@ server.get('*', async (req, res) => {
     `<meta property="og:type" content="website"/>`,
     `<meta property="og:url" content="${req.headers.host + req.originalUrl}"/>`,
     /* Assign pinia data to use in client side later */
-    `<script>window.__pinia = ${JSON.stringify(store.state.value)}</script>`,
+    `<script>window.__INITIAL_STATE__ = ${JSON.stringify(store.state.value)}</script>`,
     /* pinia work-around for accessing process.env.NODE_ENV */
     `<script>window.process = { env: { NODE_ENV: 'browser'} }</script>`,
     /* importmap which define modules we use in the project */
