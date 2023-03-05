@@ -5,7 +5,7 @@
 import {createSSRApp, markRaw} from 'vue';
 import App from './app.js'
 import router from './router.js'
-import {pinia} from './store/pinia/index.js'
+import pinia from './store/pinia/piniaStore.js'
 
 export const createApp = () => {
   const app = createSSRApp(App)

@@ -32,22 +32,25 @@ const importMaps = {
 }
 
 async function ssr(req, res) {
+  const serverRenderTime = Date.now();
   const {app, router, store} = createApp()
-  // provide app property by app._props to app object
-  app._props = { serverRenderTime: Date.now() }
-
-  // custom app context
-  // app._context = {}
+  app._props = {serverRenderTime} // provide app property by app._props to app object. server side only
+  // app._context = {} // custom app context -- TODO: explore later
 
   // prepare for ssr appropriate route
   await router.push(req)
   await router.isReady()
 
+  ssrContextStore.counter++;
+
+  // init app context, the app context data will be get by useSSRContext from 'vue' (see app.js)
+  const ssrCtx = {...ssrContextStore, uid: req.cookies && req.cookies.uid};
+  const appHtml = await renderToString(app, ssrCtx);
+
+  // prepare pinia initial data for client side
   // renderToString must be called before getting pinia state data
   // beerStore.fetchData will be called at this place to fill data to pinia store
-  const ssrCtx = {...ssrContextStore, uid: req.cookies && req.cookies.uid};
-
-  const appHtml = await renderToString(app, ssrCtx);
+  const initialFrontendPiniaState = JSON.stringify(store.state.value)
 
   const tags = [
     `<title>Hello Vue SSR</title>`,
@@ -60,13 +63,13 @@ async function ssr(req, res) {
     `<meta property="og:type" content="website"/>`,
     `<meta property="og:url" content="${req.headers.host + req.originalUrl}"/>`,
     /* Assign pinia data to use in client side later */
-    `<script>window.__pinia = ${JSON.stringify(store.state.value)}</script>`,
+    `<script>window.__pinia = ${initialFrontendPiniaState}</script>`,
     /* pinia work-around for accessing process.env.NODE_ENV */
     `<script>window.process = { env: { NODE_ENV: 'browser'} }</script>`,
     /* importmap which define modules we use in the project */
     `<script type="importmap">${JSON.stringify(importMaps)}</script>`,
     /* vue client app for hydration */
-    `<script type="module" src="/client.js"> </script>`
+    `<script type="module" src="/client.js"></script>`
   ]
   const headHtml = tags.join('');
   res.send(getFullHtml(headHtml, appHtml));
