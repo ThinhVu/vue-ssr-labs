@@ -16,7 +16,7 @@ const beerStore = defineStore('beer', {
             id: beer.id,
             name: beer.name,
             tagline: beer.tagline,
-          }))
+          })).slice(0, 5)
     }
   }
 })

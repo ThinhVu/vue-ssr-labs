@@ -8,13 +8,12 @@ export default {
     onServerPrefetch(async () => await beerStore.fetchBeers())
 
     onMounted(() => {
-      console.log('beers', beerStore.beers)
       if (beerStore.beers.length === 0)
         beerStore.fetchBeers();
     })
 
     return () => h('div', [
-      h('h3', 'Using Pinia store'),
+      h('h3', 'Using Pinia store beer list'),
       h('ul', beerStore.beers.map(beer => h('li', { key: beer.id }, `${beer.name} - ${beer.tagline}`))),
     ])
   }

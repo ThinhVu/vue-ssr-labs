@@ -84,8 +84,8 @@ function namedRoute(name) {
 
 // auth using cookie
 server.get('/api/auth', (req, res) => {
-  res.cookie('uid', 'u123456', { httpOnly: true, path: '/'})
-  res.end('Authorized');
+  res.cookie('uid', Date.now(), { httpOnly: true, path: '/'})
+  res.end();
 })
 // server.get('/beer/:id', namedRoute('beer_id'), ssr)
 server.get('*', ssr);

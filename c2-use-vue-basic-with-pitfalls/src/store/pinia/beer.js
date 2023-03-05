@@ -5,11 +5,17 @@ const beerStore = defineStore('beer', {
   state() {
     return {
       beer: null,
-      beers: []
+      beers: [],
+      beerFetched: false,
+      beerFetchedAt: null
     }
   },
   actions: {
     async fetchBeers() {
+      if (this.beerFetched)
+        return
+      this.beerFetched = true;
+      this.beerFetchedAt = Date.now();
       console.log('fetch beers')
       const res = await _fetch('https://api.punkapi.com/v2/beers')
       const json = await res.json()
@@ -17,7 +23,7 @@ const beerStore = defineStore('beer', {
             id: beer.id,
             name: beer.name,
             tagline: beer.tagline,
-          }))
+          })).slice(0, 5)
     },
     async fetchBeer(id) {
       console.log('fetch beer')
