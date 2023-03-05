@@ -72,15 +72,21 @@ async function ssr(req, res) {
   const tags = [
     `<title>Hello Vue SSR</title>`,
     ...metaTags,
-    /* Assign pinia data to use in client side later */
-    `<script>window.__pinia = ${initialFrontendPiniaState}</script>`,
-    /* pinia work-around for accessing process.env.NODE_ENV */
-    `<script>window.process = { env: { NODE_ENV: 'browser'} }</script>`,
-    /* importmap which define modules we use in the project */
-    `<script type="importmap">${JSON.stringify(importMaps)}</script>`,
-    /* vue client app for hydration */
-    `<script type="module" src="/client.js"></script>`
   ]
+
+  if (process.env.CLIENT_SIDE_HYDRATION) {
+    tags.push(...[
+      /* Assign pinia data to use in client side later */
+      `<script>window.__pinia = ${initialFrontendPiniaState}</script>`,
+      /* pinia work-around for accessing process.env.NODE_ENV */
+      `<script>window.process = { env: { NODE_ENV: 'browser'} }</script>`,
+      /* importmap which define modules we use in the project */
+      `<script type="importmap">${JSON.stringify(importMaps)}</script>`,
+      /* vue client app for hydration */
+      `<script type="module" src="/client.js"> </script>`
+    ])
+  }
+
   const headHtml = tags.join('');
   res.send(getFullHtml(headHtml, appHtml));
 }
