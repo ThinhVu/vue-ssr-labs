@@ -48,16 +48,17 @@ async function ssr(req, res) {
   const appHtml = await renderToString(app, ssrCtx);
 
   // Duplicate data -> large HTML file -> take longer time to load
-  // Even though all data in the Pinia store is already rendered as an HTML, the data also be sent to the client side.
-  // We need to pass Pinia data to support client-side hydration without re-fetch data from the data source. For example Beer.js and BeerStore.
+  // Even though all data in the Pinia store is already rendered as an HTML,
+  // the data also be sent to the client side.
+  // We need to pass Pinia data to support client-side hydration without
+  // re-fetch data from the data source. For example Beer.js and BeerStore.
   // The question is, do we need to inject the data into HTML or let the client-side re-fetch it?
   // prepare pinia initial data for client side
   // renderToString must be called before getting pinia state data
   // beerStore.fetchData will be called at this place to fill data to pinia store
   const initialFrontendPiniaState = JSON.stringify(store.state.value)
 
-  const tags = [
-    `<title>Hello Vue SSR</title>`,
+  const metaTags = [
     `<meta name="robots" content="index, follow"/>`,
     `<meta name="keywords" content="vue, vuejs, ssr, vue-router, pinia, vuex"/>`,
     `<meta name="description" content="This is an POC project for Vue SSR"/>`,
@@ -66,6 +67,11 @@ async function ssr(req, res) {
     `<meta property="og:title" content="Hello Vue SSR"/>`,
     `<meta property="og:type" content="website"/>`,
     `<meta property="og:url" content="${req.headers.host + req.originalUrl}"/>`,
+  ]
+
+  const tags = [
+    `<title>Hello Vue SSR</title>`,
+    ...metaTags,
     /* Assign pinia data to use in client side later */
     `<script>window.__pinia = ${initialFrontendPiniaState}</script>`,
     /* pinia work-around for accessing process.env.NODE_ENV */
