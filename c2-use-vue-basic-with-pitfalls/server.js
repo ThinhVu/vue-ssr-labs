@@ -47,6 +47,10 @@ async function ssr(req, res) {
   const ssrCtx = {...ssrContextStore, uid: req.cookies && req.cookies.uid};
   const appHtml = await renderToString(app, ssrCtx);
 
+  // Duplicate data -> large HTML file -> take longer time to load
+  // Even though all data in the Pinia store is already rendered as an HTML, the data also be sent to the client side.
+  // We need to pass Pinia data to support client-side hydration without re-fetch data from the data source. For example Beer.js and BeerStore.
+  // The question is, do we need to inject the data into HTML or let the client-side re-fetch it?
   // prepare pinia initial data for client side
   // renderToString must be called before getting pinia state data
   // beerStore.fetchData will be called at this place to fill data to pinia store
